@@ -1,0 +1,9 @@
+server:
+  address: 0.0.0.0
+  port: 8086
+  servlet:
+      context-path: /uml-tools
+  
+spring:
+  thymeleaf:
+    cache: false
