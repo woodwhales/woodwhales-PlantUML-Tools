@@ -66,13 +66,31 @@ public class ProjectNode {
 		return jsonObject.toString();
 	}
 	
-	public String getPlantUML(HashMap<String, ProjectNode> map, Boolean isShowComponent) {
+	public String getPorjectRelationsPlantUML(HashMap<String, ProjectNode> parentProjectMap) {
+		StringBuffer sb = new StringBuffer("");
+		if(Objects.nonNull(parentProjectMap) && parentProjectMap.size() > 0 && this.isParentPom() && CollectionUtils.isNotEmpty(modules)) {
+			sb.append(BR);
+			this.modules.forEach(module -> {
+				ProjectNode childProject = parentProjectMap.get(module.getModuleName());
+				if(Objects.nonNull(childProject) && childProject.isParentPom()) {
+					sb.append(String.format("%s -> %s", packageName(artifactId), packageName(childProject.getArtifactId()))).append(BR);
+				}
+				
+			});
+		}
+		
+		return sb.toString();
+	}
+	
+	public String getPlantUML(HashMap<String, ProjectNode> componentMap, HashMap<String, ProjectNode> parentProjectMap, Boolean isShowComponent) {
 		StringBuffer sb = new StringBuffer("");
 		if(this.isParentPom() && CollectionUtils.isNotEmpty(modules)) {
 			
+			parentProjectMap.put(artifactId, this);
+			
 			sb.append(BR);
 			
-			sb.append(String.format("package \"%s\" {", artifactId+"-module"));
+			sb.append(String.format("package \"%s\" {", packageName(artifactId)));
 			sb.append(BR);
 			
 			this.modules.forEach(module -> {
@@ -91,7 +109,7 @@ public class ProjectNode {
 					JSONObject jsonObject = XML.toJSONObject(fileReader);
 					JSONObject projectJsonObject = jsonObject.getJSONObject(ProjectConstant.PROJECT);
 					ProjectNode childProjectNode = new ProjectNode(projectJsonObject, childModuleFileName);
-					sb.append(childProjectNode.getPlantUML(map, isShowComponent));
+					sb.append(childProjectNode.getPlantUML(componentMap, parentProjectMap, isShowComponent));
 				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}
@@ -100,13 +118,17 @@ public class ProjectNode {
 			return sb.toString();
 		}
 		
-		map.put(artifactId, this);
+		componentMap.put(artifactId, this);
 		if(isShowComponent) {
 			sb.append(String.format("component [ %s ] as \"%s\"", artifactId, artifactId)).append(BR);
 		}
 		
 		return sb.toString();
 		
+	}
+	
+	private String packageName(String artifactId) {
+		return StringTool.upperWithOutFisrtChar(artifactId + "-module");
 	}
 	
 	public ProjectNode(JSONObject jsonObject, String filePathName) {

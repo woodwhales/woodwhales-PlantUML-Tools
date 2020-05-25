@@ -17,5 +17,8 @@ public class StringToolTest {
 		String versionKey = StringTool.getVersionKey(version);
 		assertEquals("java.version", versionKey);
 		
+		String result = StringTool.upperWithOutFisrtChar("create-user-module");
+		assertEquals("createUserModule", result);
+		
 	}
 }
