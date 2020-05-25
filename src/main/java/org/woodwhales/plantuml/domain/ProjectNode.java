@@ -52,6 +52,8 @@ public class ProjectNode {
 	
 	private List<DependencyNode> dependencies;
 	
+	private Map<String, String> parentProperties;
+	
 	private Map<String, String> properties;
 	
 	private String description;
@@ -275,6 +277,7 @@ public class ProjectNode {
 			keySet.stream().forEach(key -> {
 				properties.put(key, propertiesMap.get(key).toString());
 			});
+			
 			this.properties = properties;
 		} catch (Exception e) {
 			log.info("this module = {} not exist properties", this.artifactId);
@@ -291,7 +294,11 @@ public class ProjectNode {
 			
 			if(StringTool.isVersionKey(version)) {
 				String versionKey = StringTool.getVersionKey(version);
-				dependencyNode.setVersion(this.properties.get(versionKey));
+				if(Objects.nonNull(this.properties) && this.properties.size() > 0) {
+					dependencyNode.setVersion(this.properties.get(versionKey));
+				}
+				//TODO 本节点没有 properties，则获取父类的 properties
+				
 			}
 			
 			dependencyNodes.add(dependencyNode);

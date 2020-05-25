@@ -1,36 +1,39 @@
 package org.woodwhales.plantuml.service;
 
+import static org.woodwhales.plantuml.constants.CommonConstant.BR;
+import static org.woodwhales.plantuml.constants.CommonConstant.ENDUML;
+import static org.woodwhales.plantuml.constants.CommonConstant.STARTUML;
+
 import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
-import org.woodwhales.plantuml.constants.CommonConstant;
 import org.woodwhales.plantuml.controller.response.ProjectInfoResponse;
 import org.woodwhales.plantuml.domain.ProjectNode;
+
+
 
 @Service
 public class PlantUMLService {
 	
-	private static final String BR = "\n";
-	
 	public ProjectInfoResponse generatePlantUML(ProjectNode projectNode, Boolean isShowComponent) {
-StringBuffer sb = new StringBuffer("");
+		StringBuffer sb = new StringBuffer("");
 		
 		HashMap<String, ProjectNode> map = new HashMap<>();
 		
-		sb.append("@startuml").append(CommonConstant.BR);
+		sb.append(STARTUML).append(BR);
 		
 		if(projectNode.isParentPom()) {
 			sb.append(projectNode.getPlantUML(map, isShowComponent));
 		}
 		
-		sb.append(CommonConstant.BR).append("@enduml");
+		sb.append(BR).append(ENDUML);
 		
 		// 模块视图
 		String modules = sb.toString();
 		
 		StringBuffer stringBuffer = new StringBuffer();
-		stringBuffer.append("@startuml").append(CommonConstant.BR);
+		stringBuffer.append(STARTUML).append(BR);
 		map.entrySet().forEach(entry -> {
 			ProjectNode projectNode_ = entry.getValue();
 			
@@ -40,7 +43,7 @@ StringBuffer sb = new StringBuffer("");
 			}
 			
 		});
-		stringBuffer.append(CommonConstant.BR).append("@enduml");
+		stringBuffer.append(BR).append(ENDUML);
 		
 		// 依赖关系视图
 		String relations = stringBuffer.toString();
