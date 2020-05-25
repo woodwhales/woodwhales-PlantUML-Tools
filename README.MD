@@ -25,3 +25,15 @@
 关系视图
 
 ![](doc/images/03.png)
+
+vsCode 集成的 plantUML 有默认图片大小限制，因此可以使用官方提供的 jar 文件生成图片：
+
+https://plantuml.com/zh/download，官网下载：[plantuml.jar](http://sourceforge.net/projects/plantuml/files/plantuml.jar/download) 文件，执行如下命令：
+
+```shell
+java -DPLANTUML_LIMIT_SIZE=8192 -jar plantuml.jar -charset UTF-8 D:\index.puml
+```
+
+参数说明：
+
+`-DPLANTUML_LIMIT_SIZE`参数是设置图像的宽高，需要设置对应的大小即可。如果图像很大会存在内存问题。需要将参数`-Xml1024m`添加到 Java 虚拟机。
