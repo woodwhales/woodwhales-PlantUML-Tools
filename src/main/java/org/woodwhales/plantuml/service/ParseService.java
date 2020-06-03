@@ -2,6 +2,8 @@ package org.woodwhales.plantuml.service;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.json.JSONObject;
 import org.json.XML;
@@ -17,5 +19,11 @@ public class ParseService {
 		JSONObject jsonObject = XML.toJSONObject(fileReader);
 		JSONObject projectJsonObject = jsonObject.getJSONObject(ProjectConstant.PROJECT);
 		return new ProjectNode(projectJsonObject, filePathName);
+	}
+
+	public Set<String> getFilePathSet(ProjectNode projectNode) {
+		HashSet<String> fileNameSet = new HashSet<>();
+		projectNode.getFileNameSet(fileNameSet);
+		return fileNameSet;
 	}
 }

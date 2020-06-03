@@ -5,6 +5,7 @@ import static org.woodwhales.plantuml.constants.CommonConstant.BR;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,26 +37,39 @@ public class ProjectNode {
 	private String artifactId;
 	private String version;
 	private String packaging;
+	
 	private Boolean parentPom;
 	
 	private String filePathName;
 	
+	// 当前工程的pom配置的 JSONObject 形式
 	private JSONObject jsonObject;
 	
+	// 当前工程的父工程节点
 	private DependencyNode parent;
 	
+	// 当前工程的父工程的 groupId
 	private String parentGroupId;
 	
+	// 如果当前工程为pom工程，其 dependencyManagement中的所有 dependency
 	private List<DependencyNode> dependencyManagement;
 	
+	// 当前节点下的所有模块
 	private List<Module> modules;
 	
+	// 当前节点下的所有模块的ProjectNode形式
+	private List<ProjectNode> childProjectNodes;
+	
+	// 当前工程的所有依赖
 	private List<DependencyNode> dependencies;
 	
+	// 当前工程的父工程的 properties
 	private Map<String, String> parentProperties;
 	
+	// 当前工程的 properties
 	private Map<String, String> properties;
 	
+	// 当前工程的 description
 	private String description;
 	
 	/**
@@ -164,9 +178,35 @@ public class ProjectNode {
 			// 设置 modules
 			initModules(jsonObject);
 			
+			// 设置子节点
+			initChildProjectNodes();
+			
 			// 设置 dependencyManagement
 			initDependencyManagement(jsonObject);
 		}
+	}
+
+	private void initChildProjectNodes() {
+		if(CollectionUtils.isEmpty(this.modules)) {
+			return;
+		}
+		
+		this.childProjectNodes = this.modules.stream().map(this::getChild).collect(Collectors.toList());
+	}
+	
+	private ProjectNode getChild(Module module) {
+		String childModuleFileName = StringUtils.join(filePathName, File.separator , module.getModuleName());
+		try {
+			FileReader fileReader = new FileReader(childModuleFileName + File.separator + "pom.xml");
+			JSONObject jsonObject = XML.toJSONObject(fileReader);
+			JSONObject childProjectJsonObject = jsonObject.getJSONObject(ProjectConstant.PROJECT);
+			ProjectNode childProjectNode = new ProjectNode(childProjectJsonObject, childModuleFileName);
+			return childProjectNode;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 
 	private void initPackaging(JSONObject jsonObject) {
@@ -385,6 +425,10 @@ public class ProjectNode {
 		return filePathName;
 	}
 	
+	public List<ProjectNode> getChildProjectNodes() {
+		return childProjectNodes;
+	}
+	
 	/**
 	 * 获取依赖模块名
 	 * @param map 当前父工程中所有子模块列表
@@ -426,6 +470,19 @@ public class ProjectNode {
 		
 		return sb.toString();
 	}
-
 	
+	/**
+	 * 获取所有文件夹绝对路径集合
+	 * @param fileNameSet 将当前节点下的所有模块的文件夹绝对路径保存到该集合中
+	 */
+	public void getFileNameSet(Set<String> fileNameSet) {
+		fileNameSet.add(this.filePathName);
+		if(CollectionUtils.isNotEmpty(childProjectNodes)) {
+			childProjectNodes.stream().forEach(childProjectNode -> {
+				fileNameSet.add(childProjectNode.getFilePathName());
+				childProjectNode.getFileNameSet(fileNameSet);
+			});
+		}
+	}
+
 }
