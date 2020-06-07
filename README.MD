@@ -9,6 +9,8 @@
 > JDK 运行环境要求：JDK 1.8+
 >
 > 默认访问URL：http://127.0.0.1:8086/uml-tools/
+>
+> 在线生成 plantUML 图片：https://fivecoder.com/plant-uml
 
 指定好根项目的绝对路径，选择组件视图代码中是否需要生成组件代码（默认不开启），点击立即提交即可。
 
@@ -37,3 +39,5 @@ java -DPLANTUML_LIMIT_SIZE=8192 -jar plantuml.jar -charset UTF-8 D:\index.puml
 参数说明：
 
 `-DPLANTUML_LIMIT_SIZE`参数是设置图像的宽高，需要设置对应的大小即可。如果图像很大会存在内存问题。需要将参数`-Xml1024m`添加到 Java 虚拟机。
+
+笔者将 plantuml-server 源码下载编译，自己搭建了一个在线预览版：https://fivecoder.com/plant-uml

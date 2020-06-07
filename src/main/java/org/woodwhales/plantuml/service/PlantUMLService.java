@@ -11,8 +11,10 @@ import org.springframework.stereotype.Service;
 import org.woodwhales.plantuml.controller.response.ProjectInfoResponse;
 import org.woodwhales.plantuml.domain.ProjectNode;
 
+import lombok.extern.slf4j.Slf4j;
 
 
+@Slf4j
 @Service
 public class PlantUMLService {
 	
@@ -28,17 +30,27 @@ public class PlantUMLService {
 		if(projectNode.isParentPom()) {
 			sb.append(projectNode.getPlantUML(componentMap, parentProjectMap, isShowComponent));
 			
-			sb.append(projectNode.getPorjectRelationsPlantUML(parentProjectMap));
+			// sb.append(projectNode.getPorjectRelationsPlantUML(parentProjectMap));
 			sb.append(BR);
 		}
+		
+		
+		String relationStr = generteRelationsPlantUML(componentMap);
+		sb.append(relationStr);
 		
 		sb.append(ENDUML);
 		
 		// 模块视图
 		String modules = sb.toString();
 		
+		String relations = new StringBuffer().append(STARTUML).append(BR).append(relationStr).append(ENDUML).toString();
+		log.info("modules = {}", componentMap.size());
+		return new ProjectInfoResponse(modules, relations);
+	}
+
+	private String generteRelationsPlantUML(HashMap<String, ProjectNode> componentMap) {
 		StringBuffer stringBuffer = new StringBuffer();
-		stringBuffer.append(STARTUML).append(BR);
+		stringBuffer.append(BR);
 		componentMap.entrySet().forEach(entry -> {
 			ProjectNode projectNode_ = entry.getValue();
 			
@@ -48,11 +60,11 @@ public class PlantUMLService {
 			}
 			
 		});
-		stringBuffer.append(BR).append(ENDUML);
+		stringBuffer.append(BR);
 		
 		// 依赖关系视图
 		String relations = stringBuffer.toString();
-		
-		return new ProjectInfoResponse(modules, relations);
+		return relations;
 	}
+	
 }

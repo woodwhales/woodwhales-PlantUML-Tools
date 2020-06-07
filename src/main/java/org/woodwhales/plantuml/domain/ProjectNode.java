@@ -108,7 +108,7 @@ public class ProjectNode {
 			sb.append(BR);
 			
 			this.modules.forEach(module -> {
-				sb.append(String.format("    component \"%s\"", module.getModuleName())).append(BR);
+				sb.append(String.format("    component [ %s ] as \"%s\"", module.getModuleName(), module.getModuleName())).append(BR);
 			});
 			
 			sb.append("}");
@@ -147,7 +147,7 @@ public class ProjectNode {
 	
 	public ProjectNode(JSONObject jsonObject, String filePathName) {
 		this.filePathName = filePathName;
-
+		
 		this.jsonObject = jsonObject;
 
 		// 设置 artifactId
@@ -211,6 +211,7 @@ public class ProjectNode {
 
 	private void initPackaging(JSONObject jsonObject) {
 		try {
+			// 获取打包方式
 			this.packaging = jsonObject.getString(ProjectConstant.PACKAGING);
 		} catch (Exception e) {
 			log.info("this module = {} not exist packaging", this.artifactId);
@@ -265,6 +266,7 @@ public class ProjectNode {
 		try {
 			JSONObject modulesJSONObject = jsonObject.getJSONObject(ProjectConstant.MODULES);
 			try {
+				// 当工程只有一个module的情况时，会抛出异常
 				JSONArray moduleJsonArray = modulesJSONObject.getJSONArray(ProjectConstant.MODULE);
 				List<Module> modules = new ArrayList<>(moduleJsonArray.length());
 				
@@ -274,6 +276,7 @@ public class ProjectNode {
 				
 				this.modules = modules;
 			} catch (Exception e) {
+				// 当工程不为多个module的情况时，一般情况就是该工程只有一个module
 				List<Module> modules = Collections.singletonList(Module.parse(modulesJSONObject.getString(ProjectConstant.MODULE)));
 				this.modules = modules;
 			}
@@ -484,5 +487,35 @@ public class ProjectNode {
 			});
 		}
 	}
+	
+	/**
+	 * 所有模块名
+	 * @param modulesMap
+	 */
+	public void getModules(HashMap<String, ProjectNode> modulesMap) {
+		if(this.isParentPom() && CollectionUtils.isNotEmpty(this.getChildProjectNodes())) {
+			this.getChildProjectNodes().stream().forEach(childProjectNode -> {
+				childProjectNode.getModules(modulesMap);
+			});
+			
+		}
+		
+		modulesMap.put(this.artifactId, this);
+	}
 
+	public String treeModules() {
+		StringBuffer sb = new StringBuffer("");
+		if(this.parentPom) {
+			sb.append(this.artifactId).append(BR);
+			List<ProjectNode> childProjectNodes = this.getChildProjectNodes();
+			if(CollectionUtils.isEmpty(childProjectNodes)) {
+				childProjectNodes.stream().forEach(childProjectNode -> {
+					sb.append(" >> " + childProjectNode.getArtifactId()).append(BR);
+				});
+			}
+			return sb.toString();
+		}
+		
+		return "";		
+	}
 }
