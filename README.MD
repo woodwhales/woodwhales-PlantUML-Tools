@@ -10,7 +10,7 @@
 >
 > 默认访问URL：http://127.0.0.1:8086/uml-tools/
 >
-> 在线生成 plantUML 图片：https://fivecoder.com/plant-uml
+> 在线生成 plantUML 图片：https://cloudcoders.cn/plant-uml
 
 指定好根项目的绝对路径，选择组件视图代码中是否需要生成组件代码（默认不开启），点击立即提交即可。
 
