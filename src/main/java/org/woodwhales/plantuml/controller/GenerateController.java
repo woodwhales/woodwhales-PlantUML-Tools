@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RestController
-public class GenerteController {
+public class GenerateController {
 	
 	@Autowired
 	private ParseService parseService;
@@ -32,7 +32,7 @@ public class GenerteController {
 	private PlantUMLService plantUMLService;
 	
 	@PostMapping("/generate")
-	public Object generte(@RequestBody ProjectInfoRequestBody projectInfoRequestBody) throws Exception {
+	public Object generate(@RequestBody ProjectInfoRequestBody projectInfoRequestBody) throws Exception {
 		String filePathName = projectInfoRequestBody.getProjectFilePath();
 
 		ProjectNode projectNode = parseService.parse(filePathName);
