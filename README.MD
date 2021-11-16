@@ -2,6 +2,12 @@
 
 [![](https://img.shields.io/badge/Author-woodwhales-green.svg)](https://woodwhales.cn/) ![](https://img.shields.io/badge/License-GPL%203.0-orange.svg)
 
+:rocket: 本工程由于代码架构设计不合理，2021-11-16 起暂停更新。
+
+:rocket: 重构的新工程请移步至：https://github.com/woodwhales/woodwhales-maven-project-parser
+
+
+
 根据指定 maven 工程生成组件图及模块关系视图的 plantUML 代码。
 
 说明：plantUML 语法学习及安装，请移步至笔者的博文：[PlantUML 语法之时序图](https://woodwhales.cn/2019/01/13/017/)
@@ -28,9 +34,9 @@
 
 ![](doc/images/03.png)
 
-vsCode 集成的 plantUML 有默认图片大小限制，因此可以使用官方提供的 jar 文件生成图片：
+vsCode 集成的 plantUML 有默认图片大小限制，因此可以使用官网（https://plantuml.com/zh/download）提供的 jar 文件生成图片，执行如下命令：
 
-https://plantuml.com/zh/download，官网下载：[plantuml.jar](http://sourceforge.net/projects/plantuml/files/plantuml.jar/download) 文件，执行如下命令：
+> 官网下载：[plantuml.jar](http://sourceforge.net/projects/plantuml/files/plantuml.jar/download)
 
 ```shell
 java -DPLANTUML_LIMIT_SIZE=8192 -jar plantuml.jar -charset UTF-8 D:\index.puml
@@ -40,4 +46,4 @@ java -DPLANTUML_LIMIT_SIZE=8192 -jar plantuml.jar -charset UTF-8 D:\index.puml
 
 `-DPLANTUML_LIMIT_SIZE`参数是设置图像的宽高，需要设置对应的大小即可。如果图像很大会存在内存问题。需要将参数`-Xml1024m`添加到 Java 虚拟机。
 
-笔者将 plantuml-server 源码下载编译，自己搭建了一个在线预览版：https://fivecoder.com/plant-uml
+笔者将 plantuml-server 源码下载编译，自己搭建了一个在线预览版：https://cloudcoders.cn/plant-uml
